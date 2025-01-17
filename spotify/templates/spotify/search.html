@@ -1,0 +1,210 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'spotify/style.css' %}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+    .container {
+        display: flex;
+        justify-content: flex-start;
+        height: 100vh;
+        padding-left: 0;
+        padding-top: 50px;
+        float: left;
+    }
+
+    main {
+        padding: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+        background-color: #121212; /* Dark background */
+        color: #ffffff; /* Light text */
+        border-radius: 10px; /* Rounded corners */
+        text-align: center; /* Center-align content */
+        overflow: hidden; /* Ensure no overflowing elements */
+    }
+
+    /* Container for the songs */
+    main > div {
+        max-height: 400px; /* Limit the height of the song list */
+        overflow-y: auto; /* Enable vertical scrolling */
+        padding-right: 10px; /* Add some padding for a clean scroll */
+    }
+
+    /* Styling for the scrollbar */
+    main > div::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    main > div::-webkit-scrollbar-thumb {
+        background-color: #1DB954; /* Spotify green for the scrollbar thumb */
+        border-radius: 4px;
+    }
+
+    main > div::-webkit-scrollbar-track {
+        background-color: #2c2c2c; /* Slightly lighter background for the scrollbar track */
+    }
+
+    /* Ensure songs are stacked properly */
+    main > div > div {
+        margin-bottom: 20px; /* Space between songs */}
+/* Song title styling */
+main h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #1DB954; /* Spotify green for title */
+}
+
+/* Song image styling */
+main img {
+    width: 100%; /* Full width */
+    max-width: 300px; /* Limit maximum size */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Shadow effect */
+    margin-bottom: 20px; /* Space below the image */
+    margin-top: 20px;
+}
+
+/* Audio player styling */
+audio {
+    width: 100%; /* Full width */
+    margin-top: 20px; /* Space above the audio */
+    outline: none; /* Remove outline */
+    border-radius: 5px; /* Rounded corners */
+}
+
+/* Comments button container */
+.comment-button-container {
+    display: flex;
+    justify-content: center; /* Center-align the comments section */
+    align-items: center; /* Vertically align content */
+    margin-top: 15px; /* Space above the section */
+    margin-bottom: 20px; /* Space below the section */
+    justify-content: flex-start;
+}
+
+/* Comment button styling */
+.comment-button {
+    background-color: transparent; /* Transparent button */
+    border: none; /* No border */
+    cursor: pointer; /* Pointer cursor on hover */
+    font-size: 18px; /* Text size */
+    color: #cac8c8; /* Neutral icon color */
+    display: flex;
+    align-items: center; /* Vertically align icon and text */
+    gap: 8px; /* Space between icon and text */
+    text-decoration: none; /* Remove underline */
+    transition: color 0.3s, transform 0.2s; /* Smooth hover effect */
+}
+
+/* Hover effect for comment button */
+.comment-button:hover {
+    color: #1DB954; /* Spotify green */
+    transform: scale(1.1); /* Slightly enlarge on hover */
+}
+
+/* Comment count styling */
+.comment-count {
+    font-size: 14px;
+    color: #b3b3b3; /* Slightly lighter text */
+}
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <!-- Spotify Logo -->
+        <div class="logo-container">
+            <img src="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_RGB_Green.png" alt="Spotify Logo" style="width: 100%; height: auto; padding: 20px; box-sizing: border-box;">
+        </div>
+
+        <!-- Welcome User -->
+        <div class="sidebar-section">
+            <span style="margin-left: 14px;" class="sidebar-link-icon">👤</span>
+            <b>Welcome, {{ user.first_name }}</b>
+            <br>
+            <br>
+           
+            <a href="{% url 'logout' %}">
+                <span class="sidebar-link-icon">↪️</span>
+                <b>Logout</b>
+            </a>
+        </div>
+
+        <!-- Top section of the sidebar -->
+        <div class="sidebar-section">
+            <a href="{% url 'home' %}" class="sidebar-link active">
+                <span class="sidebar-link-icon">🏠</span>
+                Home
+            </a>
+            <a href="#" class="sidebar-link">
+                <span class="sidebar-link-icon">🔍</span>
+                Search
+            </a>
+        </div>
+
+        <!-- Bottom section of the sidebar -->
+        <div class="sidebar-section">
+            <a href="{% url 'liked_songs' %}" class="sidebar-link active">
+                <span class="sidebar-link-icon">💜</span>
+                <span class="sidebar-link-text">Liked Songs</span>
+            </a>
+            <!-- Repeat for each item -->
+            <a href="#" class="sidebar-link">
+                <span class="sidebar-link-icon">🎶</span>
+                <span class="sidebar-link-text">Lofi Experience</span>
+            </a>
+            <a href="{% url 'profile' %}">
+                <span class="sidebar-link-icon">👤</span>
+                <span class="sidebar-link-text">Profile</span>
+            </a>
+            <!-- ... more links ... -->
+        </div>
+    </div>
+    <div style="margin-left:240px; padding:20px;">
+        <header class="header-container">
+            <div class="search-bar" style="width: 390px;">
+                <form action="{% url 'search' %}" method="get">
+                    <input type="search" name="q" placeholder="What do you want to listen to?" aria-label="Search" value="{{ query }}">
+                    <button type="submit" aria-label="Search">
+                        🔍
+                    </button>
+                </form>
+            </div>
+    </div>
+        </header>
+        <div class="container">
+        <main>
+                <div>
+                    {% for song in songs %}
+                    <div >
+                        {% if song.song_image %}
+                            <img  src="{{ song.song_image.url }}" alt="{{ song.title }}">
+                        {% else %}
+                            <p >No image available</p>
+                        {% endif %}
+                        <div class="comment-button-container">
+                            <a href="{% url 'song_comments' song.pk %}" class="comment-button">
+                                <i class="fas fa-comment"></i>
+                                <span class="comment-count">{{ song.comment_set.count }} comments</span>
+                            </a>
+                        </div>
+                        {% if song.audio %}
+                            <audio controls>
+                                <source src="{{ song.audio.url }}" type="audio/mpeg">
+                                Your browser does not support the audio element.
+                            </audio>
+                        {% else %}
+                            <p class="no-audio">No audio file available</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+        </main>
+        </div>
+</body>
+</html>

@@ -1,0 +1,387 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Streaming Service</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'spotify/style.css' %}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<style>
+    .add-button {
+            background-color: #1DB954; /* Spotify green */
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            margin-left: 10px; /* Space between search bar and button */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* General styling for song cards */
+
+.song-card {
+    position: relative;
+    border: 1px solid #423e3e;
+    padding: 17px;
+    text-align: center;
+    min-width: 262px;
+    border-radius: 8px;
+    background-color: #1d1c1c;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+}
+.song-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 10px;
+}
+
+@media only screen and (max-width: 768px) {
+    .song-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media only screen and (max-width: 480px) {
+    .song-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+.song-card img {
+    width: 220px;
+    height: 220px;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.song-card h2 {
+    font-size: 1.2em;
+    font-weight: lighter;
+    margin-top: 4px;
+    color: #cac8c8;
+}
+
+.song-card audio {
+    margin-top: 10px;
+    width: 103%;
+}
+.like-button-container {
+    display: flex;
+    align-items: center; /* Vertically aligns icon and count */
+    justify-content: flex-start; /* Centers the button and count horizontally */
+    margin-top: 10px; /* Adds spacing from the title */
+    margin-bottom: 10px; /* Adds spacing above the audio file */
+    gap: 8px;
+
+}
+
+.like-button {
+    background-color: transparent; /* Transparent background */
+    border: none; /* Remove default button border */
+    cursor: pointer; /* Pointer cursor on hover */
+    font-size: 20px; /* Icon size */
+    color: #cac8c8; /* Neutral color for the heart icon */
+    transition: color 0.3s; /* Smooth color transition on hover */
+}
+
+.like-button:hover {
+    transform: scale(1.2);
+    transition: 0.2s;
+}
+.like-button:hover i {
+    color: #eb0f7d;
+}
+
+.like-count {
+    font-size: 14px; /* Size for the like count text */
+    color: #cac8c8; /* Text color */
+    margin-left: 5px; /* Space between heart icon and count */
+    vertical-align: middle;
+}
+/* Comment button container */
+.comment-button-container {
+    display: flex;
+    align-items: center; /* Vertically aligns icon and count */
+    justify-content: flex-start; /* Aligns items to the left */
+    gap: 8px; /* Space between the icon and count */
+    margin-top: 5px; /* Adds spacing from other sections */
+    margin-bottom: 10px; /* Adds spacing above the audio file */
+}
+
+/* Comment button styles */
+.comment-button {
+    background-color: transparent; /* Transparent background */
+    border: none; /* Remove default button border */
+    cursor: pointer; /* Pointer cursor on hover */
+    font-size: 20px; /* Icon size */
+    color: #cac8c8; /* Neutral color for the comment icon */
+    transition: color 0.3s; /* Smooth color transition on hover */
+    display: flex;
+    align-items: center; /* Vertically align the icon and count */
+    gap: 5px; /* Space between icon and count */
+}
+
+/* Hover effect for comment button */
+.comment-button:hover {
+    transform: scale(1.2); /* Slightly enlarge the button on hover */
+    color: #1DB954; /* Spotify green color on hover */
+    transition: 0.2s;
+}
+
+/* Comment count styling */
+.comment-count {
+    font-size: 14px; /* Font size for the comment count */
+    color: #cac8c8; /* Neutral text color */
+    margin-left: 3px; /* Space between icon and count */
+}
+
+/* Three dots menu */
+.menu-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.menu-dots {
+    font-size: 1.5em;
+    cursor: pointer;
+    color: #cac8c8;
+    user-select: none;
+}
+
+.menu-options {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: rgb(51, 50, 50);
+    border: 1px solid #242323;
+    border-radius: 4px;
+    padding: 5px 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0.2s, opacity 0.2s;
+    z-index: 10;
+}
+
+.menu-options .menu-item {
+    display: block;
+    color: #939597;
+    text-decoration: none;
+    font-size: 0.9em;
+    padding: 5px 0;
+}
+
+.menu-options .menu-item:hover {
+    color: #0056b3;
+}
+
+.menu-container:hover .menu-options {
+    visibility: visible;
+    opacity: 1;
+}
+
+
+</style>
+<body style="margin:0; padding:0; background:#121212; font-family:Arial, sans-serif; color:#fff;">
+    <div class="sidebar">
+        <!-- Spotify Logo -->
+        <div class="logo-container">
+            <img src="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_RGB_Green.png" alt="Spotify Logo" style="width: 100%; height: auto; padding: 20px; box-sizing: border-box;">
+        </div>
+
+        <!-- Welcome User -->
+        <div class="sidebar-section">
+            <span style="margin-left: 14px;" class="sidebar-link-icon">👤</span>
+            <b>Welcome, {{ user.first_name }}</b>
+            <br>
+            <br>
+           
+            <a href="{% url 'logout' %}">
+                <span class="sidebar-link-icon">↪️</span>
+                <b>Logout</b>
+            </a>
+        </div>
+
+        <!-- Top section of the sidebar -->
+        <div class="sidebar-section">
+            <a href="{% url 'home'%}" class="sidebar-link active">
+                <span class="sidebar-link-icon">🏠</span>
+                Home
+            </a>
+            <a href="#" class="sidebar-link">
+                <span class="sidebar-link-icon">🔍</span>
+                Search
+            </a>
+        </div>
+
+        <!-- Bottom section of the sidebar -->
+        <div class="sidebar-section">
+            <a href="{% url 'liked_songs' %}" class="sidebar-link active">
+                <span class="sidebar-link-icon">💜</span>
+                <span class="sidebar-link-text">Liked Songs</span>
+            </a>
+            <!-- Repeat for each item -->
+            <a href="#" class="sidebar-link">
+                <span class="sidebar-link-icon">🎶</span>
+                <span class="sidebar-link-text">Lofi Experience</span>
+            </a>
+            <a href="{% url 'profile' %}">
+                <span class="sidebar-link-icon">👤</span>
+                <span class="sidebar-link-text">Profile</span>
+            </a>
+            <!-- ... more links ... -->
+        </div>
+    </div>
+
+    <div style="margin-left:240px; padding:20px;">
+        <header class="header-container">
+            <div class="search-bar" style="width: 340px;">
+                <form action="{% url 'search' %}" method="get">
+                    <input type="text" name="q" placeholder="What do you want to listen to?" aria-label="Search" value="{{ query }}">
+                    <button type="submit" aria-label="Search">
+                        🔍
+                    </button>
+                </form>
+                {% if query %}
+                    {% if songs %}
+                        <div style="display: flex; gap: 10px; flex-wrap: nowrap; overflow-x: auto;">
+                            {% for song in songs %}
+                                <div class="song-card">
+                                    {% if song.song_image %}
+                                        <a href="{% url 'song_details' song.id %}">
+                                            <img src="{{ song.song_image.url }}" alt="{{ song.title }}">
+                                        </a>
+                                    {% else %}
+                                        <p>No image available</p>
+                                    {% endif %}
+                                    <h2>{{ song.title }}</h2>
+                                    {% if song.audio %}
+                                        <audio controls>
+                                            <source src="{{ song.audio.url }}" type="audio/mpeg">
+                                            Your browser does not support the audio element.
+                                        </audio>
+                                    {% else %}
+                                        <p>No audio file available</p>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p>No results found for "{{ query }}".</p>
+                    {% endif %}
+                {% endif %}
+                <a href="/upload_music">
+                    <button class="add-button" aria-label="Add">
+                        +
+                    </button>
+                </a>
+            </div>
+            <div class="search-title">Top Songs</div>
+        </header>
+        <main style="padding-top:20px;">
+            <section style="margin-top:0px; padding:0px; overflow-x:auto;">
+                <div class="song-grid">
+                    {% for song in songs %}
+                    <div class="song-card">
+                        {% if song.song_image %}
+                        <a href="{% url 'song_details' song.id %}">
+                            <img src="{{ song.song_image.url }}" alt="{{ song.title }}">
+                        </a>
+                        {% else %}
+                            <p>No image available</p>
+                        {% endif %}
+                        <h2>{{ song.title}}</h2>
+                        <div class="like-button-container">
+                            <form action="{% url 'toggle-like' song.pk %}" method="POST" style="display: inline-block;">
+                                {% csrf_token %}
+                                <button type="submit" class="like-button">
+                                    <i class="fas fa-heart" style="color: {% if user in song.likes.all %} #c22727 {% else %} #cac8c8 {% endif %};"></i>
+                                </button>
+                                <span class="like-count">{{ song.likes.count }} likes</span>
+                            </form>
+                        </div>
+                    
+                        <div class="comment-button-container">
+                            <a href="{% url 'song_comments' song.pk %}" class="comment-button">
+                                <i class="fas fa-comment"></i>
+                                <span class="comment-count">{{ song.comment_set.count }} comments</span>
+                            </a>
+                        </div>
+                        {% if song.audio %}
+                            <audio controls>
+                                <source src="{{ song.audio.url }}" type="audio/mpeg">
+                                Your browser does not support the audio element.
+                            </audio>
+                        {% else %}
+                            <p>No audio file available</p>
+                        {% endif %}
+                        <div class="menu-container">
+                            <span class="menu-dots">⋮</span>
+                            <div class="menu-options">
+                                <a href="{% url 'edit_song' song.id %}" class="menu-item">Edit</a>
+                                <a href="{% url 'delete' song.id %}" class="menu-item">Delete</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script>
+       document.addEventListener("DOMContentLoaded", () => {
+    const likeButtons = document.querySelectorAll(".like-button");
+
+    likeButtons.forEach(button => {
+        button.addEventListener("click", async event => {
+            event.preventDefault(); // Prevent the default form submission
+
+            const form = button.closest("form"); // Get the closest form element
+            const likeCountSpan = button.nextElementSibling; // The span element for like count
+            const heartIcon = button.querySelector("i"); // The heart icon
+
+            try {
+                const response = await fetch(form.action, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": form.querySelector("[name=csrfmiddlewaretoken]").value,
+                        "Content-Type": "application/json",
+                    },
+                });
+
+                if (response.ok) {
+                    const data = await response.json(); // Parse the JSON response
+                    const liked = data.liked; // Boolean indicating whether the song is liked
+                    const likesCount = data.likes_count; // Updated like count
+
+                    // Update the heart icon color
+                    if (liked) {
+                        heartIcon.style.color = "#c22727"; // Liked color
+                    } else {
+                        heartIcon.style.color = "#cac8c8"; // Neutral color
+                    }
+
+                    // Update the like count display
+                    likeCountSpan.textContent = `${likesCount} likes`; // Update like count
+                }
+            } catch (error) {
+                console.error("Error toggling like:", error); // Log any errors
+            }
+        });
+    });
+});
+
+    </script>
+    <script src="path/to/your/javascript/file.js"></script>
+</body>
+</html>

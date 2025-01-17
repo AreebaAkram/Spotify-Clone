@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comments for {{ songs.title }}</title>
+    <style>
+
+    /* General Body Styling */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f9f9f9;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+        color: #333;
+    }
+
+    /* Main Container */
+    .container {
+        width: 70%;
+        max-width: 400px;
+        background-color: #ffffff;
+        margin: 20px auto;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Page Titles */
+    h1 {
+        font-size: 2.5rem;
+        font-family: 'Georgia', serif;
+        color: #1DB954;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+
+    h2 {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #444;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    /* Comments Section */
+    .comments-section {
+        margin-top: 20px;
+    }
+
+    .comment {
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #fdfdfd;
+    }
+
+    .comment strong {
+        font-size: 1rem;
+        color: #000;
+    }
+
+    .comment em {
+        font-size: 0.8rem;
+        color: #777;
+        display: block;
+        text-align: right;
+        margin-top: 5px;
+    }
+
+    /* Add Comment Form */
+    form {
+        margin-top: 20px;
+    }
+
+    textarea {
+        width: 100%;
+        height: 80px;
+        padding: 10px;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        resize: none;
+    }
+
+    button {
+        margin-top: 10px;
+        width: 100%;
+        background-color: #1DB954;
+        color: white;
+        padding: 10px;
+        font-size: 1rem;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #14843f;
+    }
+
+    /* Back to Song Link */
+    .back-link {
+        display: block;
+        margin-top: 20px;
+        text-align: center;
+        color: #1DB954;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .back-link:hover {
+        color: #14843f;
+    }
+
+
+    </style>
+</head>
+<body>
+    
+        <div class="container">
+            <h1>Comments for</h1>
+            <h2>{{ songs.title }}</h2>
+    
+            <div class="comments-section">
+                {% for comment in songs.comment_set.all %}
+                <div class="comment">
+                    <p><strong>{{ comment.user.username }}</strong>: {{ comment.comment }}</p>
+                    <p><em>{{ comment.created_at }}</em></p>
+                </div>
+                {% empty %}
+                <p>No comments yet.</p>
+                {% endfor %}
+            </div>
+    
+            <form action="{% url 'add-comment' songs.id %}" method="POST">
+                {% csrf_token %}
+                <textarea name="comment" placeholder="Add a comment..." required></textarea>
+                <button type="submit">Submit</button>
+            </form>
+    
+            <a href="{% url 'song_details' songs.pk %}" class="back-link">Back to Song</a>
+        </div>
+    </body>
+
+</html>
